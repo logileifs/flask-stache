@@ -19,13 +19,11 @@ from pystache.renderer import Renderer
 def _get_renderer(append=None):
     append = append or []
 
-    bp = app.blueprints.get(request.blueprint, None)
+    dirs = [os.path.join(app.root_path, app.template_folder, *append)]
 
-    if not bp or not bp.template_folder:
-        dirs = [os.path.join(app.import_name, app.template_folder, *append)]
-    else:
-        path = bp.import_name.split('.') + [bp.template_folder]
-        dirs = [os.path.join(*path + append)]
+    bp = app.blueprints.get(request.blueprint, None)
+    if bp and bp.template_folder:
+        dirs.append(os.path.join(bp.root_path, bp.template_folder, *append))
 
     return Renderer(search_dirs=dirs)
 
